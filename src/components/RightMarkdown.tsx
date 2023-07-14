@@ -1,7 +1,26 @@
 import "github-markdown-css/github-markdown-light.css";
+import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { useMyState } from "../states";
+import { TypeType } from "../typing";
+import { parseMarkdown } from "../utils/markdownHelper";
 
 export default function RightMarkdown() {
+  const [content, setContent] = useState("");
+  const { snap } = useMyState();
+
+  useEffect(() => {
+    console.log("RightMarkdown.tsx useEffect");
+    const type = snap.session.type as TypeType;
+    const key = snap.session.key;
+    if (!key) {
+      setContent("## 开发文档");
+    } else {
+      setContent(parseMarkdown(type, key));
+    }
+  }, [snap.session.type, snap.session.key]);
+
   return (
     <div
       style={{
@@ -13,7 +32,7 @@ export default function RightMarkdown() {
       }}
     >
       <div className="markdown-body">
-        <ReactMarkdown>// 开发文档 </ReactMarkdown>
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
       </div>
     </div>
   );

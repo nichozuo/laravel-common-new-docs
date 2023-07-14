@@ -10,7 +10,7 @@ import RightMarkdown from "../components/RightMarkdown";
 import { stateActions } from "../states";
 
 export default function Home() {
-  let [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     const type = searchParams.get("type") || "api";

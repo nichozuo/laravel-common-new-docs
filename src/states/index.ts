@@ -1,21 +1,15 @@
 import { proxy, useSnapshot } from "valtio";
+import { SessionType, StateType } from "../typing";
 
 export * from "./actions";
 
-type SessionType = {
-  openapi: object | undefined;
-  type: string | undefined;
-  key: string | undefined;
-};
 const session: SessionType = proxy({
   openapi: undefined,
   type: undefined,
   key: undefined,
+  treeNodes: undefined,
 });
 
-export type StateType = {
-  session: SessionType;
-};
 export const state: StateType = proxy({
   session,
 });

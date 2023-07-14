@@ -10,7 +10,7 @@ import { useMyState } from "../states";
 
 export default function MySiderMenu() {
   const { snap } = useMyState();
-  let [, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
   return (
     <Menu
       theme="dark"

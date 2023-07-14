@@ -1,28 +1,13 @@
-import { Tree } from "antd";
+import { Space, Tree } from "antd";
+import { useSearchParams } from "react-router-dom";
+import { useMyState } from "../states";
+import { TreeNode } from "../utils/treeNodesHelper";
 
 const { DirectoryTree } = Tree;
 
-const treeData: any[] = [
-  {
-    title: "Admin",
-    key: "Admin",
-    intro: "后台",
-    children: [
-      { title: "leaf 0-0", key: "0-0-0", isLeaf: true },
-      { title: "leaf 0-1", key: "0-0-1", isLeaf: true },
-    ],
-  },
-  {
-    title: "parent 1",
-    key: "0-1",
-    children: [
-      { title: "leaf 1-0", key: "0-1-0", isLeaf: true },
-      { title: "leaf 1-1", key: "0-1-1", isLeaf: true },
-    ],
-  },
-];
-
 export default function LeftTree() {
+  const { snap } = useMyState();
+  const [, setSearchParams] = useSearchParams();
   return (
     <div
       style={{
@@ -36,20 +21,29 @@ export default function LeftTree() {
       <DirectoryTree
         showLine
         showIcon={false}
-        defaultExpandAll
-        treeData={treeData}
+        treeData={snap.session.treeNodes[snap.session.type] as TreeNode[]}
+        autoExpandParent
+        defaultExpandedKeys={[snap.session.key as string]}
+        selectedKeys={[snap.session.key as string]}
+        onSelect={(_keys, event) => {
+          const node = event.selectedNodes[0];
+          if (node?.isLeaf) {
+            setSearchParams({
+              type: snap.session.type as string,
+              key: node.key,
+            });
+          }
+        }}
         titleRender={(node) => {
           return (
-            <div
+            <Space
               style={{
-                display: "flex",
-                justifyContent: "space-between",
                 lineHeight: "30px",
               }}
             >
               <span>{node.title}</span>
               <span style={{ color: "#999" }}>{node.intro}</span>
-            </div>
+            </Space>
           );
         }}
       />
