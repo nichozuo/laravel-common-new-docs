@@ -1,12 +1,12 @@
-import { OpenAPIObject } from "../openapi";
-import { TreeNodesType } from "../typing";
-import { parseTree } from "../utils/treeNodesHelper";
+import { MyOpenApiType } from "../typing";
 import { state } from "./index";
 
 export const stateActions = {
-  setOpenApi: (openapi: OpenAPIObject) => {
+  setOpenApi: (openapi: MyOpenApiType) => {
     state.session.openapi = openapi;
-    stateActions.setTreeNodes(parseTree(openapi));
+    // const tree = parseTree(openapi);
+    // console.log("parseTree", tree);
+    // stateActions.setTreeNodes(tree);
   },
   setType: (type: string | undefined) => {
     state.session.type = type;
@@ -14,7 +14,9 @@ export const stateActions = {
   setKey: (key: string | undefined) => {
     state.session.key = key;
   },
-  setTreeNodes: (treeNodes: TreeNodesType) => {
-    state.session.treeNodes = treeNodes;
-  },
+  // setTreeNodes: (treeNodes: LeftTreeNodeType) => {
+  //   state.session.treeNodes = treeNodes;
+
+  //   console.log("tree 111", state.session.treeNodes);
+  // },
 };

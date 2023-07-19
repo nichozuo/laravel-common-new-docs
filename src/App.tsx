@@ -2,9 +2,9 @@ import { message } from "antd";
 import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import MyLoading from "./components/MyLoading";
-import { OpenAPIObject } from "./openapi";
 import Home from "./pages/Home";
 import { stateActions } from "./states";
+import { MyOpenApiType } from "./typing";
 
 function App() {
   const [ready, setReady] = useState(false);
@@ -17,7 +17,7 @@ function App() {
         void message.error("请求失败");
       } else {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const openapi = (await res.json()) as OpenAPIObject;
+        const openapi = (await res.json()) as MyOpenApiType;
         stateActions.setOpenApi(openapi);
         setReady(true);
       }

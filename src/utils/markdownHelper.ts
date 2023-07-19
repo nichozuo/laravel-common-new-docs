@@ -1,13 +1,12 @@
-import { OpenAPIObject, PathItemObject } from "../openapi";
 import { state } from "../states";
-import { TypeType } from "../typing";
+import { KeyEnum, NodeType } from "../typing";
 
-export const parseMarkdown = (type: TypeType, key: string) => {
+export const parseMarkdown = (type: KeyEnum, key: string) => {
   console.log(type, key);
   switch (type) {
     case "api":
       return parseApi(key);
-    case "database":
+    case "db":
       return parseDatabase(key);
     default:
       return "# helloworld";
@@ -15,72 +14,78 @@ export const parseMarkdown = (type: TypeType, key: string) => {
 };
 
 const parseApi = (key: string) => {
-  const openapi = state.session.openapi as OpenAPIObject;
-  const api: PathItemObject | undefined = openapi.paths[key];
-  console.log(api);
+  const apis = state.session.openapi?.extends?.data?.api;
+  const node = apis?.[key] as NodeType;
+  let properties = "";
+  node.params?.forEach((param) => {
+    const required = param?.required ? "Y" : "-";
+    properties += `| ${param?.key} | ${param?.type} | ${required} | ${param?.description} |\n`;
+  });
+
   return `
-  # 获取用户信息 
-  > 接口说明
-  
-  ### 请求方式
+  # ${node?.title || ""}
+  > ${node?.description || ""}
+
+  #### METHOD
   \`\`\`
-  POST
+  ${node?.method || ""}
+  \`\`\`
+  
+  #### URI
+  \`\`\`
+  ${key}
   \`\`\`
 
-  ### 请求前缀
-  \`\`\`
-  /api/admin
-  \`\`\`
+  #### PARAMS
+  | name | type | required | description |
+  | ---- | ---- | ---- | ---- |
+  ${properties}
   
-  ### 请求后缀
-  \`\`\`
-  auth/login
-  \`\`\`
-
-  ### 请求参数
-  
-  | 名称 | 类型 | 描述 |
-  | ---- | ---- | ---- |
-  | userId | integer | 用户ID |
-  
-  ### 返回字段 
-  
-  | 名称 | 类型 | 描述 |
-  | ---- | ---- | ---- |  
-  | id | integer | 用户ID |
-  | name | string | 用户名字 |
-  | age | integer | 用户年龄 |
-  
-  ### 示例
-  
-  **请求示例**
-  
-  \`\`\`
-  GET /users/123
-  \`\`\`
-  
-  **返回示例**
-  
+  #### RESPONSE
   \`\`\`json
   {
-    "id": 123,
-    "name": "张三",
-    "age": 20
+    "code": 0
+    "message": "ok"
   }
   \`\`\`
-  
-  ### 错误码
-  
-  | 错误码 | 描述 | 
-  | ------ | ---- |
-  | 10001 | 用户不存在 |
-  | 10002 | 该接口暂未开放 |
   `;
 };
 
 const parseDatabase = (key: string) => {
-  const openapi = state.session.openapi as OpenAPIObject;
-  const api: PathItemObject | undefined = openapi.paths[key];
-  console.log(api);
-  return "# helloworld database";
+  const db = state.session.openapi?.extends?.data?.db;
+  const node = db?.[key] as NodeType;
+  // const schema = schemas?.[key] as SchemaObject;
+  // console.log("schema", schema);
+  // const title = key;
+  // const description = schema?.description || "";
+  let properties = "";
+  node.columns?.forEach((column) => {
+    properties += `| ${column?.name} | ${column?.type} | ${
+      column?.length || ""
+    } | ${column?.precision} | ${column?.scale ?? ""} | ${
+      column?.notNull ? "Y" : "-"
+    } | ${column?.default ?? ""} | ${column?.comment ?? ""} |\n`;
+  });
+  // Object.entries(
+  //   schema.properties as { [propertyName: string]: SchemaObject }
+  // ).forEach(([key, value]) => {
+  //   console.log(key, value);
+  //   const type = value?.type as SchemaObjectType;
+  //   const length = "";
+  //   const precision = "";
+  //   const scale = "";
+  //   const notnull = schema.required?.includes(key) ? "Y" : "-";
+  //   const defaultValue = "";
+  //   const description = value.description || "";
+  //   properties += `| ${key} | ${type} | ${length} | ${precision} | ${scale} | ${notnull} | ${defaultValue} | ${description} |\n`;
+  // });
+
+  return `
+  # ${node.title}
+  > ${node.description}
+  
+  | name | type | length | precision | scale | notnull | default | comment |
+  | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+  ${properties}
+  `;
 };

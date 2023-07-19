@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useMyState } from "../states";
-import { TypeType } from "../typing";
+import { KeyEnum } from "../typing";
 import { parseMarkdown } from "../utils/markdownHelper";
 
 export default function RightMarkdown() {
@@ -12,7 +12,7 @@ export default function RightMarkdown() {
 
   useEffect(() => {
     console.log("RightMarkdown.tsx useEffect");
-    const type = snap.session.type as TypeType;
+    const type = snap.session.type as KeyEnum;
     const key = snap.session.key;
     if (!key) {
       setContent("## 开发文档");

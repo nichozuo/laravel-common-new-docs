@@ -9,7 +9,6 @@ const session: SessionType = proxy({
   key: undefined,
   treeNodes: undefined,
 });
-
 export const state: StateType = proxy({
   session,
 });

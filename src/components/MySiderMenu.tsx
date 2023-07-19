@@ -26,7 +26,7 @@ export default function MySiderMenu() {
           label: "接口",
         },
         {
-          key: "database",
+          key: "db",
           icon: <DatabaseOutlined />,
           label: "表结构",
         },
