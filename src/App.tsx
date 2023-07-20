@@ -30,7 +30,7 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/dist/" element={<Home />}></Route>
+      <Route path="/docs/" element={<Home />}></Route>
     </Routes>
   );
 }

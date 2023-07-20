@@ -45,10 +45,15 @@ export type NodeType = {
     scale: number;
     notNull: boolean;
     nullableString: string;
-    comment: any;
-    default: any;
+    comment: string;
+    default: string;
     isPrimaryKey: boolean;
     isForeignKey: boolean;
+  }[];
+  consts?: {
+    label: string;
+    value: string;
+    color: string;
   }[];
 };
 

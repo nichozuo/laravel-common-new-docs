@@ -3,7 +3,7 @@ import { DataNode } from "antd/es/tree";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useMyState } from "../states";
-import { KeyEnum } from "../typing";
+import { KeyEnum, NodeType } from "../typing";
 
 const { DirectoryTree } = Tree;
 
@@ -54,8 +54,10 @@ export default function LeftTree() {
                 lineHeight: "30px",
               }}
             >
-              <span>{node.title}</span>
-              <span style={{ color: "#999" }}>{node.description}</span>
+              <span>{(node as NodeType)?.title}</span>
+              <span style={{ color: "#999" }}>
+                {(node as NodeType).description}
+              </span>
             </Space>
           );
         }}
