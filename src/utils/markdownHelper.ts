@@ -1,3 +1,7 @@
+/* eslint-disable no-unsafe-optional-chaining */
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { state } from "../states";
 import { KeyEnum } from "../typing";
 
@@ -18,7 +22,7 @@ export const parseMarkdown = (type: KeyEnum, key: string) => {
 const parseApi = (key: string) => {
   // const api = state.session.openapi?.paths[key] ?? undefined;
   // if (!api) return "";
-  let output = {};
+  let output = {} as any;
   const input = state.session.openapi?.paths[key];
 
   for (const method in input) {
@@ -70,7 +74,7 @@ const parseDatabase = (key: string) => {
   let output = "";
 
   const input = state.session.openapi?.components;
-  const { title, properties } = input[key];
+  const { title, properties } = input?.[key];
   let propertiesOutput = "";
 
   for (const propKey in properties) {
@@ -100,7 +104,7 @@ const parseEnum = () => {
   for (const key in input) {
     if (input[key]["x-type"] !== "enum") continue;
     const { title, properties } = input[key];
-    let enumOutput = JSON.stringify(properties, null, 2);
+    const enumOutput = JSON.stringify(properties, null, 2);
 
     output += `// ${title}\n`;
     output += `export const ${key} = ${enumOutput};\n\n`;

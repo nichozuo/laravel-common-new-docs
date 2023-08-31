@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Space, Tree } from "antd";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useMyState } from "../states";
-import { TreeNode } from "../typing";
 
 const { DirectoryTree } = Tree;
 
@@ -13,6 +14,13 @@ export default function LeftTree() {
   useEffect(() => {
     if (!snap.session.type || !snap.session.openapi) return;
   }, [snap.session.openapi, snap.session.type]);
+
+  const treeData: any =
+    snap.session.type === "api"
+      ? snap.session.apiTree
+      : snap.session.type === "db"
+      ? snap.session.dbTree
+      : snap.session.enumTree;
 
   return (
     <div
@@ -27,18 +35,12 @@ export default function LeftTree() {
       <DirectoryTree
         showLine
         showIcon={false}
-        treeData={
-          snap.session.type === "api"
-            ? snap.session.apiTree
-            : snap.session.type === "db"
-            ? snap.session.dbTree
-            : snap.session.enumTree
-        }
+        treeData={treeData}
         autoExpandParent
         defaultExpandedKeys={[snap.session.key as string]}
         selectedKeys={[snap.session.key as string]}
         onSelect={(_keys, event) => {
-          const node = event.selectedNodes[0];
+          const node = event.selectedNodes[0] as any;
           if (node?.isLeaf) {
             setSearchParams({
               type: snap.session.type as string,
@@ -46,15 +48,15 @@ export default function LeftTree() {
             });
           }
         }}
-        titleRender={(node: TreeNode) => {
+        titleRender={(node) => {
           return (
             <Space
               style={{
                 lineHeight: "30px",
               }}
             >
-              <span>{node?.title}</span>
-              <span style={{ color: "#999" }}>{node?.intro}</span>
+              <span>{(node as any)?.title}</span>
+              <span style={{ color: "#999" }}>{(node as any)?.intro}</span>
             </Space>
           );
         }}

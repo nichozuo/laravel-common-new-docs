@@ -1,5 +1,5 @@
 import { proxy, useSnapshot } from "valtio";
-import { SessionType, StateType } from "../typing";
+import { SessionType, StateType, TreeNode } from "../typing";
 
 export * from "./actions";
 
@@ -9,7 +9,7 @@ const session: SessionType = proxy({
   key: undefined,
   apiTree: [],
   dbTree: [],
-  enumTree: [{ title: "Enum", key: "enum", isLeaf: true }],
+  enumTree: [{ title: "Enum", key: "enum", isLeaf: true }] as TreeNode[],
 });
 export const state: StateType = proxy({
   session,

@@ -1,4 +1,8 @@
-import { OpenApiType, TreeNode } from "../typing";
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable no-unsafe-optional-chaining */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { OpenApiType } from "../typing";
 import { state } from "./index";
 
 export const stateActions = {
@@ -17,17 +21,21 @@ export const stateActions = {
     state.session.key = key;
   },
   parseApiTree: (openapi: OpenApiType) => {
-    const output: TreeNode[] = [];
-    const map: { [key: string]: TreeNode } = {};
+    const output: any = [];
+    const map: any = {};
 
     for (const path in openapi?.paths) {
       // console.log("path", path);
-      const { tags, summary, description } = openapi?.paths?.[path].post as any;
+      const { tags, summary, description } = openapi?.paths?.[path].post;
       // console.log("path", tags, summary, description);
       const [title, controller] = tags[0].split("/");
       if (!map[title]) {
         map[title] = [];
-        output.push({ title, key: title, children: map[title] });
+        output.push({
+          title: title as string,
+          key: title as string,
+          children: map[title],
+        });
       }
       if (!map[tags[0]]) {
         map[tags[0]] = [];
@@ -49,7 +57,7 @@ export const stateActions = {
     // return output;
   },
   parseDbTree: (openapi: OpenApiType) => {
-    const output: TreeNode[] = [];
+    const output: any = [];
     const input = openapi?.components;
     for (const key in input) {
       if (input[key]["x-type"] !== "database") continue;

@@ -4,15 +4,15 @@ export type TreeNode = {
   intro?: string;
   isLeaf?: boolean;
   children?: TreeNode[];
-}[];
+};
 
 export type SessionType = {
   openapi: OpenApiType | undefined;
   type: string | undefined;
   key: string | undefined;
-  apiTree: TreeNode[];
-  dbTree: TreeNode[];
-  enumTree: TreeNode[];
+  apiTree?: TreeNode[] | undefined;
+  dbTree?: TreeNode[] | undefined;
+  enumTree?: TreeNode[] | undefined;
 };
 
 export type OpenApiType = {
