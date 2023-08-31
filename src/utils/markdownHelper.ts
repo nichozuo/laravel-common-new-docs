@@ -1,5 +1,5 @@
 import { state } from "../states";
-import { KeyEnum, NodeType } from "../typing";
+import { KeyEnum } from "../typing";
 
 export const parseMarkdown = (type: KeyEnum, key: string) => {
   console.log(type, key);
@@ -9,28 +9,48 @@ export const parseMarkdown = (type: KeyEnum, key: string) => {
     case "db":
       return parseDatabase(key);
     case "enum":
-      return parseEnum(key);
+      return parseEnum();
     default:
       return "# helloworld";
   }
 };
 
 const parseApi = (key: string) => {
-  const apis = state.session.openapi?.extends?.data?.api;
-  const node = apis?.[key] as NodeType;
-  let properties = "";
-  node.params?.forEach((param) => {
-    const required = param?.required ? "Y" : "-";
-    properties += `| ${param?.key} | ${param?.type} | ${required} | ${param?.description} |\n`;
-  });
+  // const api = state.session.openapi?.paths[key] ?? undefined;
+  // if (!api) return "";
+  let output = {};
+  const input = state.session.openapi?.paths[key];
+
+  for (const method in input) {
+    const { summary, description, requestBody } = input[method];
+    let propertiesString = "";
+
+    if (requestBody !== null) {
+      const properties =
+        requestBody.content["application/x-www-form-urlencoded"].schema
+          .properties ?? {};
+      for (const key in properties) {
+        const property = properties[key];
+        const required = property?.required ? "Y" : "-";
+        propertiesString += `| ${key} | ${property?.type} | ${required} | ${property?.description} |\n`;
+      }
+    }
+
+    output = {
+      method,
+      summary,
+      description,
+      propertiesString,
+    };
+  }
 
   return `
-  # ${node?.title || ""}
-  > ${node?.description || ""}
+  # ${output?.summary || ""}
+  > ${output?.description || ""}
 
   #### METHOD
   \`\`\`
-  ${node?.method || ""}
+  ${output?.method || ""}
   \`\`\`
   
   #### URI
@@ -41,54 +61,54 @@ const parseApi = (key: string) => {
   #### PARAMS
   | name | type | required | description |
   | ---- | ---- | ---- | ---- |
-  ${properties}
+  ${output?.propertiesString}
   
-  #### RESPONSE
-  \`\`\`json
-  {
-    "code": 0
-    "message": "ok"
-  }
-  \`\`\`
   `;
 };
 
 const parseDatabase = (key: string) => {
-  const db = state.session.openapi?.extends?.data?.db;
-  const node = db?.[key] as NodeType;
-  let properties = "";
-  node.columns?.forEach((column) => {
-    properties += `| ${column?.name} | ${column?.type} | ${
-      column?.length || ""
-    } | ${column?.precision} | ${column?.scale ?? ""} | ${
-      column?.notNull ? "Y" : "-"
-    } | ${column?.default ?? ""} | ${column?.comment ?? ""} |\n`;
-  });
+  let output = "";
 
-  return `
-  # ${node.title}
-  > ${node.description}
+  const input = state.session.openapi?.components;
+  const { title, properties } = input[key];
+  let propertiesOutput = "";
+
+  for (const propKey in properties) {
+    const { type, description, required } = properties[propKey];
+    const notnull = required === "required" ? "YES" : "NO";
+    propertiesOutput += `| ${propKey} | ${type} |  |  |  | ${notnull} |  | ${
+      description || ""
+    } |\n`;
+  }
+
+  output += `
+  # ${key}
+  > ${title}
   
   | name | type | length | precision | scale | notnull | default | comment |
   | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
-  ${properties}
+  ${propertiesOutput}
   `;
+
+  return output;
 };
 
-const parseEnum = (key: string) => {
-  const enums = state.session.openapi?.extends?.data?.enum;
-  const node = enums?.[key] as NodeType;
-  let properties = "";
-  node.consts?.forEach((item) => {
-    properties += `| ${item?.label} | ${item?.value} | ${item?.color} |\n`;
-  });
+const parseEnum = () => {
+  let output = "";
 
+  const input = state.session.openapi?.components;
+  for (const key in input) {
+    if (input[key]["x-type"] !== "enum") continue;
+    const { title, properties } = input[key];
+    let enumOutput = JSON.stringify(properties, null, 2);
+
+    output += `// ${title}\n`;
+    output += `export const ${key} = ${enumOutput};\n\n`;
+  }
+  console.log("output: ", output);
   return `
-  # ${node.title}
-  > ${node.description}
-  
-  | label | value | color |
-  | ---- | ---- | ---- |
-  ${properties}
+  \`\`\`javascript
+  ${output}
+  \`\`\`
   `;
 };

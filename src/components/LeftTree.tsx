@@ -1,24 +1,17 @@
 import { Space, Tree } from "antd";
-import { DataNode } from "antd/es/tree";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useMyState } from "../states";
-import { KeyEnum, NodeType } from "../typing";
+import { TreeNode } from "../typing";
 
 const { DirectoryTree } = Tree;
 
 export default function LeftTree() {
   const { snap } = useMyState();
   const [, setSearchParams] = useSearchParams();
-  const [tree, setTree] = useState<DataNode[]>([]);
 
   useEffect(() => {
     if (!snap.session.type || !snap.session.openapi) return;
-    const tree1 = snap.session.openapi.extends.tree?.[
-      snap.session.type as KeyEnum
-    ] as DataNode[];
-    console.log("left tree", tree1);
-    setTree(tree1 || []);
   }, [snap.session.openapi, snap.session.type]);
 
   return (
@@ -34,7 +27,13 @@ export default function LeftTree() {
       <DirectoryTree
         showLine
         showIcon={false}
-        treeData={tree}
+        treeData={
+          snap.session.type === "api"
+            ? snap.session.apiTree
+            : snap.session.type === "db"
+            ? snap.session.dbTree
+            : snap.session.enumTree
+        }
         autoExpandParent
         defaultExpandedKeys={[snap.session.key as string]}
         selectedKeys={[snap.session.key as string]}
@@ -47,17 +46,15 @@ export default function LeftTree() {
             });
           }
         }}
-        titleRender={(node) => {
+        titleRender={(node: TreeNode) => {
           return (
             <Space
               style={{
                 lineHeight: "30px",
               }}
             >
-              <span>{(node as NodeType)?.title}</span>
-              <span style={{ color: "#999" }}>
-                {(node as NodeType).description}
-              </span>
+              <span>{node?.title}</span>
+              <span style={{ color: "#999" }}>{node?.intro}</span>
             </Space>
           );
         }}
