@@ -10,9 +10,6 @@ export const stateActions = {
     state.session.openapi = openapi;
     stateActions.parseApiTree(openapi);
     stateActions.parseDbTree(openapi);
-    // const tree = parseTree(openapi);
-    // console.log("parseTree", tree);
-    // stateActions.setTreeNodes(tree);
   },
   setType: (type: string | undefined) => {
     state.session.type = type;
@@ -72,10 +69,4 @@ export const stateActions = {
     console.log("parseDbTree", output);
     state.session.dbTree = output;
   },
-
-  // setTreeNodes: (treeNodes: LeftTreeNodeType) => {
-  //   state.session.treeNodes = treeNodes;
-
-  //   console.log("tree 111", state.session.treeNodes);
-  // },
 };
