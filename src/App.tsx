@@ -10,9 +10,11 @@ function App() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    console.log("App.tsx useEffect");
+    console.log("App.tsx useEffect start");
     async function fetchData() {
-      // const res: Response = await fetch("http://0.0.0.0:8000/api/docs/openapi");
+      // const res: Response = await fetch(
+      //   "https://gold.szsx.cc/api/docs/openapi"
+      // );
       const res: Response = await fetch("/api/docs/openapi");
       if (res.status !== 200) {
         void message.error("请求失败");
@@ -25,13 +27,14 @@ function App() {
     }
 
     void fetchData();
+    console.log("App.tsx useEffect end");
   }, []);
 
   if (!ready) return <MyLoading />;
 
   return (
     <Routes>
-      <Route path="/docs/" element={<Home />}></Route>
+      <Route path="/docs/index.html" element={<Home />}></Route>
     </Routes>
   );
 }
