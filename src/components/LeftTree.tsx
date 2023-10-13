@@ -29,7 +29,8 @@ export default function LeftTree() {
         borderRadius: "10px",
         padding: "10px",
         backgroundColor: "#FFF",
-        minHeight: "calc(100vh - 75px)",
+        height: "calc(100vh - 75px)",
+        overflow: "scroll",
       }}
     >
       <DirectoryTree

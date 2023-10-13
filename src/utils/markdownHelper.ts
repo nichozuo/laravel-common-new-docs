@@ -45,6 +45,14 @@ const parseApi = (key: string) => {
       summary,
       description,
       propertiesString,
+      response:
+        input[method]["x-resp"] == null
+          ? ""
+          : JSON.stringify(
+              JSON.parse(input[method]["x-resp"] as string),
+              null,
+              4
+            ),
     };
   }
 
@@ -66,6 +74,11 @@ const parseApi = (key: string) => {
   | name | type | required | description |
   | ---- | ---- | ---- | ---- |
   ${output?.propertiesString}
+
+  #### RESPONSE
+  \`\`\`json
+  ${output?.response}
+  \`\`\`
   
   `;
 };

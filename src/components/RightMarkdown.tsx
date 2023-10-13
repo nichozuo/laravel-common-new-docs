@@ -28,7 +28,8 @@ export default function RightMarkdown() {
         borderRadius: "10px",
         padding: "15px 30px",
         backgroundColor: "#FFF",
-        minHeight: "calc(100vh - 75px)",
+        height: "calc(100vh - 75px)",
+        overflow: "scroll",
       }}
     >
       <div className="markdown-body">
