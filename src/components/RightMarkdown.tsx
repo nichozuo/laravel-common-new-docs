@@ -11,7 +11,7 @@ export default function RightMarkdown() {
   const { snap } = useMyState();
 
   useEffect(() => {
-    console.log("RightMarkdown.tsx useEffect");
+    // console.log("RightMarkdown.tsx useEffect");
     const type = snap.session.type as KeyEnum;
     const key = snap.session.key;
     if (!key) {

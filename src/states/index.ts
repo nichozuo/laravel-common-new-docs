@@ -7,8 +7,8 @@ const session: SessionType = proxy({
   openapi: undefined,
   type: undefined,
   key: undefined,
-  apiTree: [],
-  dbTree: [],
+  apiTree: undefined,
+  dbTree: undefined,
   enumTree: [{ title: "Enum", key: "enum", isLeaf: true }] as TreeNode[],
 });
 export const state: StateType = proxy({

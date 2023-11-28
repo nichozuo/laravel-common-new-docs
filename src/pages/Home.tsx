@@ -15,7 +15,7 @@ export default function Home() {
   useEffect(() => {
     const type = searchParams.get("type") || "api";
     const key = searchParams.get("key") || undefined;
-    console.log("useEffect searchParams", type, key);
+    // console.log("useEffect searchParams", type, key);
     stateActions.setType(type);
     stateActions.setKey(key);
   }, [searchParams]);
@@ -47,7 +47,7 @@ export default function Home() {
       <Layout>
         <Content>
           <PanelGroup direction="horizontal">
-            <Panel defaultSize={20}>
+            <Panel defaultSize={35}>
               <LeftTree />
             </Panel>
             <PanelResizeHandle>

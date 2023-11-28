@@ -1,8 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable no-unsafe-optional-chaining */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { OpenApiType } from "../typing";
+import { convertToTree } from "../utils/treeNodesHelper";
 import { state } from "./index";
 
 export const stateActions = {
@@ -18,43 +15,11 @@ export const stateActions = {
     state.session.key = key;
   },
   parseApiTree: (openapi: OpenApiType) => {
-    const output: any = [];
-    const map: any = {};
-
-    for (const path in openapi?.paths) {
-      // console.log("path", path);
-      const { tags, summary, description } = openapi?.paths?.[path].post;
-      // console.log("path", tags, summary, description);
-      const [title, controller] = tags[0].split("/");
-      if (!map[title]) {
-        map[title] = [];
-        output.push({
-          title: title as string,
-          key: title as string,
-          children: map[title],
-        });
-      }
-      if (!map[tags[0]]) {
-        map[tags[0]] = [];
-        map[title].push({
-          title: controller,
-          key: tags[0],
-          children: map[tags[0]],
-        });
-      }
-      map[tags[0]].push({
-        title: summary,
-        key: path,
-        intro: description,
-        isLeaf: true,
-      });
-    }
-    console.log("parseApiTree", output);
+    const output = convertToTree(openapi);
     state.session.apiTree = output;
-    // return output;
   },
   parseDbTree: (openapi: OpenApiType) => {
-    const output: any = [];
+    const output = [];
     const input = openapi?.components;
     for (const key in input) {
       if (input[key]["x-type"] !== "database") continue;
@@ -66,7 +31,6 @@ export const stateActions = {
         isLeaf: true,
       });
     }
-    console.log("parseDbTree", output);
     state.session.dbTree = output;
   },
 };

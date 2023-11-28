@@ -20,9 +20,12 @@ export default function LeftTree() {
       ? snap.session.apiTree
       : snap.session.type === "db"
       ? snap.session.dbTree
-      : snap.session.enumTree;
+      : snap.session.type === "enum"
+      ? snap.session.enumTree
+      : null;
 
-  return (
+  // console.log("treeData", treeData);
+  return treeData ? (
     <div
       style={{
         margin: "10px 5px 10px 10px",
@@ -37,7 +40,7 @@ export default function LeftTree() {
         showLine
         showIcon={false}
         treeData={treeData}
-        autoExpandParent
+        // autoExpandParent
         defaultExpandedKeys={[snap.session.key as string]}
         selectedKeys={[snap.session.key as string]}
         onSelect={(_keys, event) => {
@@ -63,5 +66,7 @@ export default function LeftTree() {
         }}
       />
     </div>
+  ) : (
+    <> </>
   );
 }

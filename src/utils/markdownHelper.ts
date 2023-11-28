@@ -1,12 +1,8 @@
-/* eslint-disable no-unsafe-optional-chaining */
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { state } from "../states";
 import { KeyEnum } from "../typing";
 
 export const parseMarkdown = (type: KeyEnum, key: string) => {
-  console.log(type, key);
+  // console.log(type, key);
   switch (type) {
     case "api":
       return parseApi(key);
@@ -20,19 +16,23 @@ export const parseMarkdown = (type: KeyEnum, key: string) => {
 };
 
 const parseApi = (key: string) => {
-  // const api = state.session.openapi?.paths[key] ?? undefined;
-  // if (!api) return "";
-  let output = {} as any;
-  const input = state.session.openapi?.paths[key];
+  let output = {
+    method: "",
+    summary: "",
+    description: "",
+    propertiesString: "",
+    response: "",
+  };
+  const path = state.session.openapi?.paths[key];
 
-  for (const method in input) {
-    const { summary, description, requestBody } = input[method];
+  for (const method in path) {
+    const { summary, description, requestBody } = path[method];
     let propertiesString = "";
 
     if (requestBody !== null) {
       const properties =
-        requestBody.content["application/x-www-form-urlencoded"].schema
-          .properties ?? {};
+        requestBody?.content["application/x-www-form-urlencoded"].schema
+          .properties ?? undefined;
       for (const key in properties) {
         const property = properties[key];
         const required = property?.required ? "Y" : "-";
@@ -46,10 +46,10 @@ const parseApi = (key: string) => {
       description,
       propertiesString,
       response:
-        input[method]["x-resp"] == null
+        path[method]["x-resp"] == null
           ? ""
           : JSON.stringify(
-              JSON.parse(input[method]["x-resp"] as string),
+              JSON.parse(path[method]["x-resp"] as string),
               null,
               4
             ),
@@ -57,12 +57,12 @@ const parseApi = (key: string) => {
   }
 
   return `
-  # ${output?.summary || ""}
-  > ${output?.description || ""}
+  # ${output?.summary}
+  > ${output?.description}
 
   #### METHOD
   \`\`\`
-  ${output?.method || ""}
+  ${output?.method}
   \`\`\`
   
   #### URI
@@ -86,8 +86,11 @@ const parseApi = (key: string) => {
 const parseDatabase = (key: string) => {
   let output = "";
 
-  const input = state.session.openapi?.components;
-  const { title, properties } = input?.[key];
+  const components = state.session.openapi?.components;
+  if (components === undefined) return output;
+  if (components?.[key] === undefined) return output;
+
+  const { title, properties } = components?.[key] ?? {};
   let propertiesOutput = "";
 
   for (const propKey in properties) {
@@ -122,7 +125,7 @@ const parseEnum = () => {
     output += `// ${title}\n`;
     output += `export const ${key} = ${enumOutput};\n\n`;
   }
-  console.log("output: ", output);
+  // console.log("output: ", output);
   return `
   \`\`\`javascript
   ${output}

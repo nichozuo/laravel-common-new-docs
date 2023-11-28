@@ -10,16 +10,12 @@ function App() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    console.log("App.tsx useEffect start");
     async function fetchData() {
-      // const res: Response = await fetch(
-      //   "https://gold.szsx.cc/api/docs/openapi"
-      // );
-      const res: Response = await fetch("/api/docs/openapi");
+      const res: Response = await fetch("http://0.0.0.0:8001/api/docs/openapi");
+      // const res: Response = await fetch("/api/docs/openapi");
       if (res.status !== 200) {
         void message.error("请求失败");
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const openapi = (await res.json()) as OpenApiType;
         stateActions.setOpenApi(openapi);
         setReady(true);
@@ -27,7 +23,6 @@ function App() {
     }
 
     void fetchData();
-    console.log("App.tsx useEffect end");
   }, []);
 
   if (!ready) return <MyLoading />;
