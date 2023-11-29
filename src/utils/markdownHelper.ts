@@ -86,7 +86,7 @@ const parseApi = (key: string) => {
 const parseDatabase = (key: string) => {
   let output = "";
 
-  const components = state.session.openapi?.components;
+  const components = state.session.openapi?.components.schemas;
   if (components === undefined) return output;
   if (components?.[key] === undefined) return output;
 
@@ -116,11 +116,11 @@ const parseDatabase = (key: string) => {
 const parseEnum = () => {
   let output = "";
 
-  const input = state.session.openapi?.components;
+  const input = state.session.openapi?.components.schemas;
   for (const key in input) {
     if (input[key]["x-type"] !== "enum") continue;
     const { title, properties } = input[key];
-    const enumOutput = JSON.stringify(properties, null, 2);
+    const enumOutput = JSON.stringify(properties);
 
     output += `// ${title}\n`;
     output += `export const ${key} = ${enumOutput};\n\n`;

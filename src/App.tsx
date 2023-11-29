@@ -11,8 +11,8 @@ function App() {
 
   useEffect(() => {
     async function fetchData() {
-      const res: Response = await fetch("http://0.0.0.0:8001/api/docs/openapi");
-      // const res: Response = await fetch("/api/docs/openapi");
+      // const res: Response = await fetch("http://0.0.0.0:8001/api/docs/openapi");
+      const res: Response = await fetch("/api/docs/openapi");
       if (res.status !== 200) {
         void message.error("请求失败");
       } else {

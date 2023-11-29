@@ -20,7 +20,7 @@ export const stateActions = {
   },
   parseDbTree: (openapi: OpenApiType) => {
     const output = [];
-    const input = openapi?.components;
+    const input = openapi.components.schemas;
     for (const key in input) {
       if (input[key]["x-type"] !== "database") continue;
       const { title } = input[key];

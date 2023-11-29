@@ -46,16 +46,18 @@ export type OpenApiType = {
     name: string;
     description: string;
   }[];
-  components?: {
-    [key: string]: {
-      type: string;
-      title: string;
-      "x-type"?: string;
-      properties: {
-        [key: string]: {
-          type: string;
-          description: string;
-          required?: string;
+  components: {
+    schemas: {
+      [key: string]: {
+        type: string;
+        title: string;
+        "x-type"?: string;
+        properties: {
+          [key: string]: {
+            type: string;
+            description: string;
+            required?: string;
+          };
         };
       };
     };
