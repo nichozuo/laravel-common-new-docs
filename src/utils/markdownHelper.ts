@@ -21,14 +21,15 @@ const parseApi = (key: string) => {
     summary: "",
     description: "",
     propertiesString: "",
-    response: "",
+    responseString: "",
+    responseIntroString: "",
   };
   const path = state.session.openapi?.paths[key];
 
   for (const method in path) {
     const { summary, description, requestBody } = path[method];
-    let propertiesString = "";
 
+    let propertiesString = "";
     if (requestBody !== null) {
       const properties =
         requestBody?.content["application/x-www-form-urlencoded"].schema
@@ -39,20 +40,61 @@ const parseApi = (key: string) => {
         propertiesString += `| ${key} | ${property?.type} | ${required} | ${property?.description} |\n`;
       }
     }
+    if (propertiesString !== "") {
+      propertiesString =
+        "#### Params\n| name | type | required | description |\n  | ---- | ---- | ---- | ---- |\n" +
+        propertiesString;
+    }
+
+    const responseIntro = path[method]["x-response-intro-json"] ?? undefined;
+    let responseIntroJson;
+    if (responseIntro) {
+      responseIntroJson = JSON.parse(responseIntro) as Record<string, any>[];
+    } else {
+      responseIntroJson = JSON.parse("[]") as Record<string, any>[];
+    }
+
+    let responseIntroString = "";
+    if (responseIntroJson.length > 0) {
+      responseIntroJson.forEach(
+        (item: {
+          name?: string;
+          type?: string;
+          required?: string;
+          intro?: string;
+        }) => {
+          responseIntroString += `| ${item?.name ?? ""} | ${
+            item?.type ?? ""
+          } | ${item?.required ?? ""} | ${item?.intro ?? ""} |\n`;
+        }
+      );
+    }
+    if (responseIntroString !== "") {
+      responseIntroString =
+        "#### Response Description\n| name | type | required | description |\n  | ---- | ---- | ---- | ---- |\n" +
+        responseIntroString;
+    }
+
+    let responseString =
+      path[method]["x-response-json"] == null
+        ? ""
+        : JSON.stringify(
+            JSON.parse(path[method]["x-response-json"] as string),
+            null,
+            4
+          );
+    if (responseString !== "") {
+      responseString =
+        "#### Response Example\n```\n" + responseString + "\n```\n";
+    }
 
     output = {
       method,
       summary,
       description,
       propertiesString,
-      response:
-        path[method]["x-resp"] == null
-          ? ""
-          : JSON.stringify(
-              JSON.parse(path[method]["x-resp"] as string),
-              null,
-              4
-            ),
+      responseString: responseString,
+      responseIntroString: responseIntroString,
     };
   }
 
@@ -60,7 +102,7 @@ const parseApi = (key: string) => {
   # ${output?.summary}
   > ${output?.description}
 
-  #### METHOD
+  #### Method
   \`\`\`
   ${output?.method}
   \`\`\`
@@ -70,16 +112,11 @@ const parseApi = (key: string) => {
   ${key}
   \`\`\`
 
-  #### PARAMS
-  | name | type | required | description |
-  | ---- | ---- | ---- | ---- |
   ${output?.propertiesString}
 
-  #### RESPONSE
-  \`\`\`json
-  ${output?.response}
-  \`\`\`
+  ${output?.responseString}
   
+  ${output?.responseIntroString}
   `;
 };
 

@@ -22,7 +22,8 @@ export type OpenApiType = {
         tags: string[];
         summary: string;
         description: string;
-        "x-resp"?: string;
+        "x-response-json"?: string;
+        "x-response-intro-json"?: string;
         requestBody?: {
           content: {
             [key: string]: {
